@@ -117,7 +117,7 @@ dependencies {
         implementation jscFlavor
     }
 
-      // Agregar la plataforma Firebase BoM
+    // Agregar la plataforma Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:33.3.0')
 
     // Agregar las dependencias de Firebase que vas a usar

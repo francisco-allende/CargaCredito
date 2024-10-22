@@ -4,7 +4,6 @@ import SplashScreen from './screens/splash';
 import LoginScreen from './screens/login';
 import HomeScreen from './screens/home';
 import RegisterScreen from './screens/register';
-import CameraScreen from './screens/camera';
 
 const Stack = createStackNavigator();
 
@@ -36,13 +35,6 @@ const MainNavigation = () => {
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{headerShown: false}}
-      />
-
-      {/* Camara  */}
-      <Stack.Screen
-        name="Camara"
-        component={CameraScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

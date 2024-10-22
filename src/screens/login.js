@@ -53,9 +53,7 @@ const LoginScreen = ({navigation}) => {
       </View>
 
       <View style={styles.form}>
-        <Text style={styles.welcomeTitle}>
-          Bienvenido a Relevamiento Visual!
-        </Text>
+        <Text style={styles.welcomeTitle}>Bienvenido a Carga de Crédito!</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
