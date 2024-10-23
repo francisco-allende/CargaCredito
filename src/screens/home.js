@@ -2,111 +2,270 @@ import React, {useState, useContext} from 'react';
 import {
   View,
   Text,
-  Button,
   StyleSheet,
   TouchableOpacity,
-  ImageBackground,
+  SafeAreaView,
+  Dimensions,
+  Modal,
 } from 'react-native';
 import {AuthContext} from '../utils/auth.context';
 import {useNavigation} from '@react-navigation/native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {AppColors, WalletStyles} from '../assets/styles/default-styles';
+import QRScanner from './qr-scanner';
+import showToast from '../functions/showToast';
 
-import {AppColors} from '../assets/styles/default-styles';
+const {width, height} = Dimensions.get('window');
 
 const HomeScreen = () => {
   const {signOut} = useContext(AuthContext);
   const navigation = useNavigation();
-
-  const handleCosasLindas = () =>
-    navigation.navigate('CosasLindas', {navigation: navigation});
-  const handleCosasFeas = () =>
-    navigation.navigate('CosasFeas', {navigation: navigation});
+  const [credits, setCredits] = useState(0); // Por ahora hardcodeado, ya que debera cargar los creditos del usuario
+  const [showScanner, setShowScanner] = useState(false);
 
   const handleLogOut = async () => {
     await signOut();
     navigation.navigate('Login');
   };
 
-  const handleUserPhotos = () => {
-    navigation.navigate('MisFotos');
+  const handleScanQR = () => {
+    setShowScanner(true);
+  };
+
+  const handleCodeScanned = (code, value) => {
+    setCredits(prev => prev + value);
+    setShowScanner(false);
+    showToast(
+      'success',
+      `Código cargado correctamente! +${value} créditos`,
+      3000,
+    );
+  };
+
+  const handleClearCredits = () => {
+    setCredits(0);
+    showToast('success', 'Créditos limpiados correctamente', 3000);
+  };
+
+  const validCodes = {
+    '8c95def646b6127282ed50454b73240300dccabc': 10, // 10 créditos
+    ae338e4e0cbb4e4bcffaf9ce5b409feb8edd5172: 50, // 50 créditos
+    '2786f4877b9091dcad7f35751bfcf5d5ea712b2f': 100, // 100 créditos
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {/* Header con botón de cerrar sesión */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleLogOut}></TouchableOpacity>
-        <Text style={styles.headerText}>Relevamiento Visual</Text>
-        <TouchableOpacity onPress={handleUserPhotos}></TouchableOpacity>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleCosasLindas}>
-          <ImageBackground
-            source={require('../assets/img/icono-difuminado.png')}
-            style={styles.buttonBackground}
-            resizeMode="cover">
-            <Text style={styles.buttonText}>Cosas Lindas</Text>
-          </ImageBackground>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleCosasFeas}>
-          <ImageBackground
-            source={require('../assets/img/icono-difuminado.png')}
-            style={styles.buttonBackground}
-            resizeMode="cover">
-            <Text style={styles.buttonText}>Cosas Feas</Text>
-          </ImageBackground>
+        <Text style={styles.headerTitle}>Mi Billetera</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
+          <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>
-    </View>
+
+      {/* Contador de Créditos */}
+      <View style={styles.creditSection}>
+        <Text style={styles.creditLabel}>Créditos Disponibles</Text>
+        <View style={styles.creditContainer}>
+          <Text style={styles.creditAmount}>{credits}</Text>
+          <Text style={styles.creditSymbol}>CR</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={handleClearCredits}>
+          <Text style={styles.clearButtonText}>Limpiar Créditos</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Botón de Escanear */}
+      <View style={styles.scanSection}>
+        <TouchableOpacity style={styles.scanButton} onPress={handleScanQR}>
+          <View style={styles.scanFrame}>
+            <View style={styles.scanCorner} />
+            <View style={styles.scanCorner} />
+            <View style={styles.scanCorner} />
+            <View style={styles.scanCorner} />
+          </View>
+          <Text style={styles.scanText}>ESCANEAR QR</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Modal
+        visible={showScanner}
+        animationType="slide"
+        onRequestClose={() => setShowScanner(false)}>
+        <QRScanner
+          setIsCameraShown={setShowScanner} // Cambiado para usar la misma función
+          onReadCode={qrValue =>
+            handleCodeScanned(qrValue, validCodes[qrValue])
+          }
+        />
+      </Modal>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: AppColors.darkBackground,
+    ...WalletStyles.container,
+    position: 'relative',
   },
   header: {
+    backgroundColor: AppColors.navy,
+    padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: AppColors.headerBackground,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
-  headerText: {
-    color: AppColors.white,
-    fontSize: 18,
+  headerTitle: {
+    color: AppColors.textPrimary,
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  logoutButton: {
+    backgroundColor: AppColors.darkBlue,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  logoutText: {
+    color: AppColors.textPrimary,
+    fontSize: 14,
+  },
+  creditSection: {
+    marginTop: 40,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  creditLabel: {
+    color: AppColors.textSecondary,
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  creditContainer: {
+    backgroundColor: AppColors.navy,
+    borderRadius: 20,
+    padding: 30,
+    minWidth: width * 0.8,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  creditAmount: {
+    color: AppColors.textPrimary,
+    fontSize: 72,
     fontWeight: 'bold',
   },
-  iconMenu: {
-    color: AppColors.white,
+  creditSymbol: {
+    color: AppColors.textSecondary,
+    fontSize: 24,
+    marginLeft: 10,
+    alignSelf: 'flex-start',
+    marginTop: 15,
   },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'column',
+  clearButton: {
+    marginTop: 20,
+    backgroundColor: AppColors.danger,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 15,
   },
-  button: {
-    flex: 1,
-    borderWidth: 5,
-    borderColor: '#4A90E2',
-    borderTopWidth: 2, // Aumentamos el grosor del borde superior
-    borderBottomWidth: 2,
+  clearButtonText: {
+    color: AppColors.textPrimary,
+    fontSize: 14,
+    fontWeight: '500',
   },
-  buttonBackground: {
+  scanSection: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 40,
   },
-  buttonText: {
-    fontSize: 45,
-    fontWeight: 'bold',
-    color: 'yellow', //AppColors.white,
-    textShadowColor: 'rgba(0, 0, 0, 1)',
-    textShadowOffset: {width: -1, height: 1},
-    textShadowRadius: 5,
-    // Añadimos múltiples sombras para crear un efecto de contorno
-    textShadowOffset: {width: -2, height: -2},
-    textShadowColor: '#000',
-    textShadowRadius: 1,
+  scanButton: {
+    width: width * 0.8,
+    height: width * 0.8,
+    backgroundColor: AppColors.navy,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  scanFrame: {
+    width: '80%',
+    height: '80%',
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scanCorner: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    borderColor: AppColors.indigo,
+    borderWidth: 3,
+  },
+  // Posicionamiento de las esquinas del frame
+  scanCorner: {
+    position: 'absolute',
+    width: 30,
+    height: 30,
+    borderColor: AppColors.textPrimary,
+    borderWidth: 3,
+    opacity: 0.5,
+  },
+  // Esquina superior izquierda
+  scanCorner: {
+    ...StyleSheet.absoluteFillObject,
+    top: 0,
+    left: 0,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+  },
+  // Esquina superior derecha
+  scanCorner: {
+    ...StyleSheet.absoluteFillObject,
+    top: 0,
+    right: 0,
+    borderLeftWidth: 0,
+    borderBottomWidth: 0,
+  },
+  // Esquina inferior izquierda
+  scanCorner: {
+    ...StyleSheet.absoluteFillObject,
+    bottom: 0,
+    left: 0,
+    borderRightWidth: 0,
+    borderTopWidth: 0,
+  },
+  // Esquina inferior derecha
+  scanCorner: {
+    ...StyleSheet.absoluteFillObject,
+    bottom: 0,
+    right: 0,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+  },
+  scanText: {
+    color: AppColors.textPrimary,
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 20,
   },
 });
 

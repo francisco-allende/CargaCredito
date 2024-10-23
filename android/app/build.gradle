@@ -129,6 +129,10 @@ dependencies {
 
     // Firebase Storage (para las fotos)
     implementation 'com.google.firebase:firebase-storage'
+
+    implementation "com.google.android.gms:play-services-mlkit-barcode-scanning:17.0.2"
+    implementation "com.google.mlkit:barcode-scanning:17.0.2"
+
 }
 
 apply plugin: 'com.google.gms.google-services'
