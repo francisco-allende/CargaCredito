@@ -19,8 +19,21 @@ const AppColors = {
   darkBackground: '#1A1A2E', // Un azul muy oscuro, casi negro
   headerBackground: '#16213E', // Un azul oscuro para el header
   buttonTextShadow: 'rgba(0, 0, 0, 0.75)', // Color para la sombra del texto en los botones
-  cosasLindasAccent: '#4DAA57', // Un verde suave para acentuar elementos relacionados con cosas lindas
-  cosasFeasAccent: '#D64045',
+
+  // Nuevos colores para wallet
+  darkBlue: '#0F172A', // Fondo principal
+  navy: '#1E293B', // Fondo secundario/header
+  indigo: '#4F46E5', // Botón principal/accent
+  border: '#334155', // Bordes de inputs
+  placeholder: '#9CA3AF', // Texto placeholder
+  inputBg: '#1E293B', // Fondo de inputs
+  link: 'white', // Enlaces y textos clickeables
+  disabled: 'rgba(79, 70, 229, 0.5)', // Estado deshabilitado
+
+  // Variantes de texto
+  textPrimary: '#FFFFFF',
+  textSecondary: '#94A3B8',
+  textMuted: '#64748B',
 };
 
 const AppBg = StyleSheet.create({
@@ -66,14 +79,29 @@ const AppBg = StyleSheet.create({
   yellow: {
     backgroundColor: AppColors.yellow,
   },
+  darkBlue: {
+    backgroundColor: AppColors.darkBlue,
+  },
+  navy: {
+    backgroundColor: AppColors.navy,
+  },
+  indigo: {
+    backgroundColor: AppColors.indigo,
+  },
 });
 
 const AppTxt = StyleSheet.create({
   primary: {
-    color: AppColors.primary,
+    color: AppColors.textPrimary,
   },
   secondary: {
-    color: AppColors.secondary,
+    color: AppColors.textSecondary,
+  },
+  muted: {
+    color: AppColors.textMuted,
+  },
+  link: {
+    color: AppColors.link,
   },
   success: {
     color: AppColors.success,
@@ -95,9 +123,6 @@ const AppTxt = StyleSheet.create({
   },
   darklight: {
     color: AppColors.darklight,
-  },
-  muted: {
-    color: AppColors.muted,
   },
   purple: {
     color: AppColors.purple,
@@ -306,6 +331,31 @@ const AppForm = StyleSheet.create({
   },
 });
 
+const WalletStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: AppColors.darkBlue,
+  },
+  header: {
+    backgroundColor: AppColors.navy,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  input: {
+    backgroundColor: AppColors.inputBg,
+    borderRadius: 12,
+    borderColor: AppColors.border,
+    color: AppColors.textPrimary,
+  },
+  button: {
+    backgroundColor: AppColors.indigo,
+    borderRadius: 12,
+  },
+  buttonDisabled: {
+    backgroundColor: AppColors.disabled,
+  },
+});
+
 export {
   AppBg,
   AppTxt,
@@ -314,4 +364,5 @@ export {
   AppButton,
   AppFontWeight,
   AppForm,
+  WalletStyles,
 };

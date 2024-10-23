@@ -4,23 +4,22 @@ import {
   Text,
   View,
   TextInput,
-  ImageBackground,
   TouchableOpacity,
+  SafeAreaView,
+  ImageBackground,
 } from 'react-native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-
-import {AppColors, AppButton} from '../assets/styles/default-styles';
 import {AuthContext} from '../utils/auth.context';
 import useAuthenticationApi from '../api/authentication';
 import showToast from '../functions/showToast';
 import auth from '@react-native-firebase/auth';
+import {AppColors, WalletStyles} from '../assets/styles/default-styles';
 
 const LoginScreen = ({navigation}) => {
   const {signIn} = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showPasswordValue, setShowPasswordValue] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {doLogin} = useAuthenticationApi(
     email,
@@ -37,223 +36,215 @@ const LoginScreen = ({navigation}) => {
     await doLogin();
   };
 
-  const easyLogin = async email => {
-    await auth().signInWithEmailAndPassword(email, '12345678');
+  const quickLogin = async userType => {
+    const emails = {
+      admin: 'adminuno@yopmail.com',
+      anonymous: 'anonimo@yopmail.com',
+      tester: 'tester@yopmail.com',
+    };
+    await auth().signInWithEmailAndPassword(emails[userType], '12345678');
     navigation.navigate('Home');
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.titleContainer}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
         <ImageBackground
-          style={{width: '100%', height: 220, transform: [{scaleX: 0.5}]}}
-          imageStyle={{resizeMode: 'stretch'}}
           source={require('../assets/img/icono-difuminado.png')}
-        />
+          style={styles.headerBackground}
+          imageStyle={styles.headerBackgroundImage}></ImageBackground>
       </View>
 
-      <View style={styles.form}>
-        <Text style={styles.welcomeTitle}>Bienvenido a Carga de Crédito!</Text>
+      <View style={styles.formContainer}>
+        <Text style={styles.welcomeText}>
+          Bienvenido de vuelta a Carga de Crédito
+        </Text>
 
-        <View style={styles.inputContainer}>
+        <View style={styles.inputWrapper}>
           <TextInput
+            style={styles.input}
+            placeholder="Correo electrónico"
+            placeholderTextColor={AppColors.placeholder}
             value={email}
             onChangeText={setEmail}
-            placeholder="Tu nombre de usuario"
-            placeholderTextColor={AppColors.darklight}
-            style={styles.inputStyle}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={styles.inputWrapper}>
           <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            placeholderTextColor={AppColors.placeholder}
             value={password}
             onChangeText={setPassword}
-            placeholder="Tu contraseña"
-            placeholderTextColor={AppColors.darklight}
-            style={styles.inputStyle}
-            secureTextEntry={showPasswordValue}
+            secureTextEntry={!showPassword}
           />
           <TouchableOpacity
-            style={styles.btnShowPassword}
-            onPress={() =>
-              setShowPasswordValue(!showPasswordValue)
-            }></TouchableOpacity>
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}>
+            <Text style={styles.eyeIconText}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[
-              AppButton.purple,
-              !email || !password || isLoading ? AppButton.disabled : '',
-            ]}
-            onPress={handleLogin}
-            disabled={!email || !password || isLoading}>
-            <Text style={AppButton.text}>Ingresar</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.loginButton,
+            (!email || !password) && styles.loginButtonDisabled,
+          ]}
+          onPress={handleLogin}
+          disabled={!email || !password || isLoading}>
+          <Text style={styles.loginButtonText}>Ingresar</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, AppButton.purple]}
-            onPress={() => navigation.navigate('Register')}
-            disabled={isLoading}>
-            <Text style={AppButton.text}>Crear Cuenta</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.registerButton}
+          onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.registerButtonText}>Crear nueva cuenta</Text>
+        </TouchableOpacity>
 
-          <View style={styles.separatorContainer}>
-            <View
-              style={[styles.borderLine, {backgroundColor: 'white', flex: 1}]}
-            />
-            <Text style={styles.separatorText}></Text>
-            <View
-              style={[styles.borderLine, {backgroundColor: 'white', flex: 1}]}
-            />
+        <View style={styles.quickAccessContainer}>
+          <Text style={styles.quickAccessTitle}>Acceso rápido</Text>
+          <View style={styles.quickButtons}>
+            <TouchableOpacity
+              style={styles.quickButton}
+              onPress={() => quickLogin('admin')}>
+              <Text style={styles.quickButtonText}>Admin</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickButton}
+              onPress={() => quickLogin('anonymous')}>
+              <Text style={styles.quickButtonText}>Anónimo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickButton}
+              onPress={() => quickLogin('tester')}>
+              <Text style={styles.quickButtonText}>Tester</Text>
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity
-            style={[
-              styles.quickAccessButton,
-              {backgroundColor: AppColors.purple},
-            ]}
-            onPress={() => easyLogin('adminuno@yopmail.com')}
-            disabled={isLoading}>
-            <Text style={styles.quickAccessText}>Inicio rápido Admin</Text>
-          </TouchableOpacity>
-
-          <View style={styles.separatorContainer}>
-            <View
-              style={[styles.borderLine, {backgroundColor: 'white', flex: 1}]}
-            />
-            <Text style={styles.separatorText}></Text>
-            <View
-              style={[styles.borderLine, {backgroundColor: 'white', flex: 1}]}
-            />
-          </View>
-
-          <TouchableOpacity
-            style={[
-              styles.quickAccessButton,
-              {backgroundColor: AppColors.purple},
-            ]}
-            onPress={() => easyLogin('anonimo@yopmail.com')}
-            disabled={isLoading}>
-            <Text style={styles.quickAccessText}>Inicio rápido Anónimo</Text>
-          </TouchableOpacity>
-
-          <View style={styles.separatorContainer}>
-            <View
-              style={[styles.borderLine, {backgroundColor: 'white', flex: 1}]}
-            />
-            <Text style={styles.separatorText}></Text>
-            <View
-              style={[styles.borderLine, {backgroundColor: 'white', flex: 1}]}
-            />
-          </View>
-
-          <TouchableOpacity
-            style={[
-              styles.quickAccessButton,
-              {backgroundColor: AppColors.purple},
-            ]}
-            onPress={() => easyLogin('tester@yopmail.com')}
-            disabled={isLoading}>
-            <Text style={styles.quickAccessText}>Inicio rápido Tester</Text>
-          </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#2C2C2C',
+    ...WalletStyles.container,
   },
-  titleContainer: {
+  header: {
     height: 200,
-    width: '100%',
-    transform: [{scaleX: 2}],
-    borderBottomStartRadius: 200,
-    borderBottomEndRadius: 200,
-    overflow: 'hidden',
+    backgroundColor: AppColors.navy,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    overflow: 'hidden', // Para asegurar que la imagen respete los bordes redondeados
+  },
+  headerBackground: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#7B61FF',
   },
-  form: {
-    backgroundColor: '#1A1A40',
+  headerBackgroundImage: {
+    opacity: 0.7, // Hace la imagen más sutil
+    transform: [{scale: 1.15}], // Agranda ligeramente la imagen
+  },
+  headerContent: {
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'rgba(30, 41, 59, 0.7)', // Overlay sutil para mejorar legibilidad
+  },
+  appName: {
+    fontSize: 32,
+    color: AppColors.textPrimary,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: 0, height: 2},
+    textShadowRadius: 4,
+  },
+  appSubtitle: {
+    fontSize: 16,
+    color: AppColors.textSecondary,
+    marginTop: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: 0, height: 1},
+    textShadowRadius: 2,
+  },
+  formContainer: {
     flex: 1,
-    paddingTop: 10,
-    paddingHorizontal: 30,
-    borderRadius: 15,
+    padding: 20,
   },
-  welcomeTitle: {
+  welcomeText: {
+    fontSize: 28,
+    color: AppColors.textPrimary,
+    fontWeight: '600',
+    marginBottom: 32,
     textAlign: 'center',
-    fontSize: 24,
-    marginTop: 12,
-    marginBottom: 25,
-    color: '#AAB2FF',
   },
-  inputContainer: {
-    borderBottomWidth: 1,
-    borderColor: '#4A5EB8',
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+  inputWrapper: {
+    marginBottom: 16,
+    position: 'relative',
   },
-  inputStyle: {
-    color: '#D9D9D9',
-    paddingRight: 5,
+  input: {
+    ...WalletStyles.input,
+    padding: 16,
+    fontSize: 16,
+    borderWidth: 1,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+  },
+  eyeIconText: {
     fontSize: 20,
-    flex: 1,
-    lineHeight: 25,
-    paddingTop: 16,
-    paddingBottom: 12,
   },
-  btnShowPassword: {
-    width: 30,
-    height: 30,
+  loginButton: {
+    ...WalletStyles.button,
+    padding: 16,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 8,
   },
-  buttonContainer: {
-    marginTop: 25,
+  loginButtonDisabled: {
+    ...WalletStyles.buttonDisabled,
   },
-  button: {
-    marginTop: 10,
+  loginButtonText: {
+    color: AppColors.textPrimary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  registerButton: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  registerButtonText: {
+    color: AppColors.link,
+    fontSize: 16,
+  },
+  quickAccessContainer: {
+    marginTop: 32,
   },
   quickAccessTitle: {
-    color: AppColors.white,
-    fontSize: 16,
-    marginTop: 20,
-    marginBottom: 10,
+    color: AppColors.textPrimary,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
     textAlign: 'center',
   },
-  quickAccessButton: {
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  quickAccessText: {
-    color: AppColors.white,
-    fontSize: 16,
-  },
-  //separator:
-  separatorContainer: {
+  quickButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  borderLine: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 0.5,
-    borderBottomColor: AppColors.light,
+  quickButton: {
+    backgroundColor: AppColors.navy,
+    borderRadius: 12,
+    padding: 12,
+    width: '30%',
   },
-  separatorText: {
-    color: 'white',
+  quickButtonText: {
+    color: AppColors.textPrimary,
     textAlign: 'center',
+    fontSize: 14,
   },
 });
 
