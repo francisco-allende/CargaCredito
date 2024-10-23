@@ -19,10 +19,14 @@ import {VALID_CODES} from '../constants/qrCodes';
 const {width, height} = Dimensions.get('window');
 
 const HomeScreen = () => {
+  const {user} = useContext(AuthContext);
   const {signOut} = useContext(AuthContext);
   const navigation = useNavigation();
   const [credits, setCredits] = useState(0); // Por ahora hardcodeado, ya que debera cargar los creditos del usuario
   const [showScanner, setShowScanner] = useState(false);
+  const [scannedCodes, setScannedCodes] = useState({});
+
+  const isAdmin = user?.email === 'adminuno@yopmail.com';
 
   const handleLogOut = async () => {
     await signOut();
@@ -51,6 +55,36 @@ const HomeScreen = () => {
     console.log('Valor a sumar:', value);
 
     if (value) {
+      // Verificar si el código ya fue escaneado
+      const attempts = scannedCodes[code] || 0;
+
+      if (isAdmin) {
+        // Lógica especial para admin
+        if (attempts >= 2) {
+          showToast('error', 'Límite de escaneos excedido', 3000);
+          setShowScanner(false);
+          return;
+        }
+        // Incrementar contador de intentos para este código
+        setScannedCodes(prev => ({
+          ...prev,
+          [code]: (prev[code] || 0) + 1,
+        }));
+      } else {
+        // Para usuarios no admin, solo se permite una vez
+        if (attempts > 0) {
+          showToast('error', 'Este código ya fue utilizado', 3000);
+          setShowScanner(false);
+          return;
+        }
+        // Registrar el primer uso del código
+        setScannedCodes(prev => ({
+          ...prev,
+          [code]: 1,
+        }));
+      }
+
+      // Actualizar créditos
       setCredits(prev => prev + value);
       setShowScanner(false);
       showToast(
@@ -63,6 +97,7 @@ const HomeScreen = () => {
 
   const handleClearCredits = () => {
     setCredits(0);
+    setScannedCodes({});
     showToast('success', 'Créditos limpiados correctamente', 3000);
   };
 

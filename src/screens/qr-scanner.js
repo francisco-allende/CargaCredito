@@ -56,6 +56,7 @@ const QrScanner = ({setIsCameraShown, onReadCode}) => {
   const onError = error => {
     Alert.alert('Error!', error.message);
   };
+
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],
     onCodeScanned: codes => {
