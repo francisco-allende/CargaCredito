@@ -27,6 +27,7 @@ const QrScanner = ({setIsCameraShown, onReadCode}) => {
   const camera = useRef(null);
   const {askPermissions} = usePermissions(PERMISSION_TYPES.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     checkPermissions();
@@ -55,10 +56,11 @@ const QrScanner = ({setIsCameraShown, onReadCode}) => {
   const onError = error => {
     Alert.alert('Error!', error.message);
   };
-
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],
     onCodeScanned: codes => {
+      if (isProcessing) return; // Si ya está procesando un código, ignoramos nuevas lecturas
+
       if (codes.length > 0 && codes[0].value) {
         const qrValue = codes[0].value;
 
@@ -73,12 +75,14 @@ const QrScanner = ({setIsCameraShown, onReadCode}) => {
 
         if (qrValue.toLowerCase().includes(code50.toLowerCase())) {
           console.log('MATCH 50!');
+          setIsProcessing(true); // Activamos el flag antes de procesar
           setTimeout(() => {
             onReadCode(qrValue); // El de 50
             setIsCameraShown(false);
           }, 500);
         } else if (qrValue === code100 || qrValue === code10) {
           console.log('MATCH 100 o 10!');
+          setIsProcessing(true); // Activamos el flag antes de procesar
           setTimeout(() => {
             onReadCode(qrValue); // Los originales
             setIsCameraShown(false);

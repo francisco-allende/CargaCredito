@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Dimensions,
   Modal,
+  ImageBackground,
 } from 'react-native';
 import {AuthContext} from '../utils/auth.context';
 import {useNavigation} from '@react-navigation/native';
@@ -69,7 +70,7 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* Header con botón de cerrar sesión */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Mi Billetera</Text>
+        <Text style={styles.headerTitle}>Mis Créditos</Text>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
@@ -92,13 +93,20 @@ const HomeScreen = () => {
       {/* Botón de Escanear */}
       <View style={styles.scanSection}>
         <TouchableOpacity style={styles.scanButton} onPress={handleScanQR}>
-          <View style={styles.scanFrame}>
-            <View style={styles.scanCorner} />
-            <View style={styles.scanCorner} />
-            <View style={styles.scanCorner} />
-            <View style={styles.scanCorner} />
-          </View>
-          <Text style={styles.scanText}>ESCANEAR QR</Text>
+          <ImageBackground
+            source={require('../assets/img/icono-difuminado.png')}
+            style={styles.backgroundImage}
+            imageStyle={styles.backgroundImageStyle}
+            resizeMode="contain" // Agregamos esto para mejor control
+          >
+            <View style={styles.scanFrame}>
+              <View style={styles.scanCorner} />
+              <View style={styles.scanCorner} />
+              <View style={styles.scanCorner} />
+              <View style={styles.scanCorner} />
+            </View>
+            <Text style={styles.scanText}>ESCANEAR QR</Text>
+          </ImageBackground>
         </TouchableOpacity>
       </View>
 
@@ -201,22 +209,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 40,
   },
-  scanButton: {
-    width: width * 0.8,
-    height: width * 0.8,
-    backgroundColor: AppColors.navy,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
-  },
+
   scanFrame: {
     width: '80%',
     height: '80%',
@@ -277,6 +270,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginTop: 20,
+  },
+
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backgroundImageStyle: {
+    borderRadius: 20, // mismo borderRadius que scanButton
+    opacity: 0.9, // ajusta según necesites
+  },
+  scanButton: {
+    width: width * 0.8,
+    height: width * 0.8,
+    backgroundColor: AppColors.navy, // podrías quitarlo si quieres que se vea solo la imagen
+    borderRadius: 20,
+    overflow: 'hidden', // importante para que la imagen respete el borderRadius
   },
 });
 
