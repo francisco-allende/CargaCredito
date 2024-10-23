@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {AppColors, WalletStyles} from '../assets/styles/default-styles';
 import QRScanner from './qr-scanner';
 import showToast from '../functions/showToast';
+import {VALID_CODES} from '../constants/qrCodes';
 
 const {width, height} = Dimensions.get('window');
 
@@ -31,25 +32,37 @@ const HomeScreen = () => {
     setShowScanner(true);
   };
 
-  const handleCodeScanned = (code, value) => {
-    setCredits(prev => prev + value);
-    setShowScanner(false);
-    showToast(
-      'success',
-      `Código cargado correctamente! +${value} créditos`,
-      3000,
-    );
+  const handleCodeScanned = code => {
+    console.log('Código escaneado:', code);
+    let value;
+
+    // El de 50 hardcodeado
+    if (code.includes('ae338e4e0cbb4e4bcffaf9ce5b409feb8edd5172')) {
+      value = 50;
+    }
+    // Los otros que ya funcionaban
+    else if (code === '2786f4877b9091dcad7f35751bfcf5d5ea712b2f') {
+      value = 100;
+    } else if (code === '8c95def646b6127282ed50454b73240300dccabc') {
+      value = 10;
+    }
+
+    console.log('Valor a sumar:', value);
+
+    if (value) {
+      setCredits(prev => prev + value);
+      setShowScanner(false);
+      showToast(
+        'success',
+        `Código cargado correctamente! +${value} créditos`,
+        3000,
+      );
+    }
   };
 
   const handleClearCredits = () => {
     setCredits(0);
     showToast('success', 'Créditos limpiados correctamente', 3000);
-  };
-
-  const validCodes = {
-    '8c95def646b6127282ed50454b73240300dccabc': 10, // 10 créditos
-    ae338e4e0cbb4e4bcffaf9ce5b409feb8edd5172: 50, // 50 créditos
-    '2786f4877b9091dcad7f35751bfcf5d5ea712b2f': 100, // 100 créditos
   };
 
   return (
@@ -94,10 +107,8 @@ const HomeScreen = () => {
         animationType="slide"
         onRequestClose={() => setShowScanner(false)}>
         <QRScanner
-          setIsCameraShown={setShowScanner} // Cambiado para usar la misma función
-          onReadCode={qrValue =>
-            handleCodeScanned(qrValue, validCodes[qrValue])
-          }
+          setIsCameraShown={setShowScanner}
+          onReadCode={handleCodeScanned} // Simplificado
         />
       </Modal>
     </SafeAreaView>

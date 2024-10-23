@@ -15,6 +15,7 @@ import {
   useCodeScanner,
 } from 'react-native-vision-camera';
 import {usePermissions} from '../functions/use-permissions';
+import {VALID_CODES} from '../constants/qrCodes';
 
 const {width, height} = Dimensions.get('window');
 const PERMISSION_TYPES = {
@@ -55,21 +56,31 @@ const QrScanner = ({setIsCameraShown, onReadCode}) => {
     Alert.alert('Error!', error.message);
   };
 
-  // QR codes válidos y sus valores
-  const validCodes = {
-    '8c95def646b6127282ed50454b73240300dccabc': 10, // 10 créditos
-    ae338e4e0cbb4e4bcffaf9ce5b409feb8edd5172: 50, // 50 créditos
-    '2786f4877b9091dcad7f35751bfcf5d5ea712b2f': 100, // 100 créditos
-  };
-
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],
     onCodeScanned: codes => {
       if (codes.length > 0 && codes[0].value) {
         const qrValue = codes[0].value;
-        if (validCodes[qrValue]) {
+
+        // El de 50 hardcodeado que ya funciona
+        const code50 = 'ae338e4e0cbb4e4bcffaf9ce5b409feb8edd5172';
+
+        // Los otros códigos que ya funcionaban
+        const code100 = '2786f4877b9091dcad7f35751bfcf5d5ea712b2f';
+        const code10 = '8c95def646b6127282ed50454b73240300dccabc';
+
+        console.log('QR Value:', qrValue);
+
+        if (qrValue.toLowerCase().includes(code50.toLowerCase())) {
+          console.log('MATCH 50!');
           setTimeout(() => {
-            onReadCode(qrValue);
+            onReadCode(qrValue); // El de 50
+            setIsCameraShown(false);
+          }, 500);
+        } else if (qrValue === code100 || qrValue === code10) {
+          console.log('MATCH 100 o 10!');
+          setTimeout(() => {
+            onReadCode(qrValue); // Los originales
             setIsCameraShown(false);
           }, 500);
         }
@@ -133,7 +144,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
   },
   scanArea: {
     width: width * 0.7,
