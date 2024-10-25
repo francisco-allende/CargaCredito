@@ -103,37 +103,33 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header con botón de cerrar sesión */}
       <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={handleClearCredits}>
+          <Text style={styles.clearButtonText}>Limpiar</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Mis Créditos</Text>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Contador de Créditos */}
       <View style={styles.creditSection}>
         <Text style={styles.creditLabel}>Créditos Disponibles</Text>
         <View style={styles.creditContainer}>
           <Text style={styles.creditAmount}>{credits}</Text>
           <Text style={styles.creditSymbol}>CR</Text>
         </View>
-        <TouchableOpacity
-          style={styles.clearButton}
-          onPress={handleClearCredits}>
-          <Text style={styles.clearButtonText}>Limpiar Créditos</Text>
-        </TouchableOpacity>
       </View>
 
-      {/* Botón de Escanear */}
       <View style={styles.scanSection}>
         <TouchableOpacity style={styles.scanButton} onPress={handleScanQR}>
           <ImageBackground
-            source={require('../assets/img/icono-difuminado.png')}
+            source={require('../assets/img/icono-creditoV.png')}
             style={styles.backgroundImage}
             imageStyle={styles.backgroundImageStyle}
-            resizeMode="contain" // Agregamos esto para mejor control
-          >
+            resizeMode="contain">
             <View style={styles.scanFrame}>
               <View style={styles.scanCorner} />
               <View style={styles.scanCorner} />
@@ -151,7 +147,7 @@ const HomeScreen = () => {
         onRequestClose={() => setShowScanner(false)}>
         <QRScanner
           setIsCameraShown={setShowScanner}
-          onReadCode={handleCodeScanned} // Simplificado
+          onReadCode={handleCodeScanned}
         />
       </Modal>
     </SafeAreaView>
@@ -163,6 +159,7 @@ const styles = StyleSheet.create({
     ...WalletStyles.container,
     position: 'relative',
   },
+
   header: {
     backgroundColor: AppColors.navy,
     padding: 20,
@@ -171,10 +168,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    height: 90,
   },
   headerTitle: {
     color: AppColors.textPrimary,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
   },
   logoutButton: {
@@ -182,69 +180,107 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   logoutText: {
     color: AppColors.textPrimary,
     fontSize: 14,
+    fontWeight: '500',
   },
-  creditSection: {
-    marginTop: 40,
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  creditLabel: {
-    color: AppColors.textSecondary,
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  creditContainer: {
-    backgroundColor: AppColors.navy,
+  clearButton: {
+    backgroundColor: AppColors.danger,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
     borderRadius: 20,
-    padding: 30,
-    minWidth: width * 0.8,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
-  },
-  creditAmount: {
-    color: AppColors.textPrimary,
-    fontSize: 72,
-    fontWeight: 'bold',
-  },
-  creditSymbol: {
-    color: AppColors.textSecondary,
-    fontSize: 24,
-    marginLeft: 10,
-    alignSelf: 'flex-start',
-    marginTop: 15,
-  },
-  clearButton: {
-    marginTop: 20,
-    backgroundColor: AppColors.danger,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 15,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   clearButtonText: {
     color: AppColors.textPrimary,
     fontSize: 14,
     fontWeight: '500',
   },
+
+  creditSection: {
+    marginTop: 20,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  creditLabel: {
+    color: AppColors.textSecondary,
+    fontSize: 32, // Aumentado
+    marginBottom: 20, // Aumentado
+    fontWeight: '600', // Más bold
+  },
+  creditContainer: {
+    backgroundColor: AppColors.navy,
+    borderRadius: 30,
+    padding: 50, // Aumentado
+    width: width * 0.95, // Aumentado
+    minHeight: height * 0.4, // Aumentado
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: 15,
+  },
+  creditAmount: {
+    color: AppColors.textPrimary,
+    fontSize: 120, // Aumentado
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: {width: 0, height: 3},
+    textShadowRadius: 5,
+  },
+  creditSymbol: {
+    color: AppColors.textSecondary,
+    fontSize: 38, // Aumentado
+    marginLeft: 15,
+    alignSelf: 'flex-start',
+    marginTop: 25,
+  },
   scanSection: {
     flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  scanButton: {
+    width: width * 0.6,
+    height: width * 0.6,
+    backgroundColor: AppColors.navy,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
   },
-
+  backgroundImageStyle: {
+    borderRadius: 20,
+    opacity: 0.9,
+  },
   scanFrame: {
     width: '80%',
     height: '80%',
@@ -254,21 +290,13 @@ const styles = StyleSheet.create({
   },
   scanCorner: {
     position: 'absolute',
-    width: 20,
-    height: 20,
-    borderColor: AppColors.indigo,
-    borderWidth: 3,
-  },
-  // Posicionamiento de las esquinas del frame
-  scanCorner: {
-    position: 'absolute',
     width: 30,
     height: 30,
     borderColor: AppColors.textPrimary,
     borderWidth: 3,
     opacity: 0.5,
   },
-  // Esquina superior izquierda
+  // Las cuatro esquinas
   scanCorner: {
     ...StyleSheet.absoluteFillObject,
     top: 0,
@@ -276,7 +304,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
     borderBottomWidth: 0,
   },
-  // Esquina superior derecha
   scanCorner: {
     ...StyleSheet.absoluteFillObject,
     top: 0,
@@ -284,7 +311,6 @@ const styles = StyleSheet.create({
     borderLeftWidth: 0,
     borderBottomWidth: 0,
   },
-  // Esquina inferior izquierda
   scanCorner: {
     ...StyleSheet.absoluteFillObject,
     bottom: 0,
@@ -292,7 +318,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
     borderTopWidth: 0,
   },
-  // Esquina inferior derecha
   scanCorner: {
     ...StyleSheet.absoluteFillObject,
     bottom: 0,
@@ -305,24 +330,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginTop: 20,
-  },
-
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backgroundImageStyle: {
-    borderRadius: 20, // mismo borderRadius que scanButton
-    opacity: 0.9, // ajusta según necesites
-  },
-  scanButton: {
-    width: width * 0.8,
-    height: width * 0.8,
-    backgroundColor: AppColors.navy, // podrías quitarlo si quieres que se vea solo la imagen
-    borderRadius: 20,
-    overflow: 'hidden', // importante para que la imagen respete el borderRadius
   },
 });
 
